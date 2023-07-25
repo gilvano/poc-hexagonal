@@ -1,0 +1,65 @@
+@startuml Hexagonal Architecture
+package infrastructure {
+    class LegalController {
+        -createLegalUseCase: CreateLegalUseCase
+        -findLegalUseCase: FindLegalUseCase
+        +create()
+        +find()
+    }
+
+    class LegalProxyDB {
+        +save()
+        +find()
+    }
+
+    package application {
+        interface CreateLegalUseCase {
+            +create()
+        }
+
+        interface FindLegalUseCase {
+            +find()
+        }
+
+        interface SaveLegalProxy {
+            +save()
+        }
+
+        interface FindLegalProxy {
+            +find()
+        }
+
+        class CreateLegalService {
+            -saveLegalProxy: SaveLegalProxy
+            +create()
+        }
+
+        class FindLegalService {
+            -findLegalProxy: FindLegalProxy
+            +find()
+        }
+
+        package domain {
+            entity Legal { }
+            entity Address { }
+            entity Individual {}
+        }
+    }
+
+    LegalController .down.> CreateLegalUseCase
+    LegalController .down.> FindLegalUseCase
+    CreateLegalService .up.|> CreateLegalUseCase
+    FindLegalService .up.|> FindLegalUseCase
+    CreateLegalService .down.> Legal
+    FindLegalService .down.> Legal
+    LegalProxyDB .up.|> SaveLegalProxy
+    LegalProxyDB .up.|> FindLegalProxy
+    CreateLegalService .down.> SaveLegalProxy
+    FindLegalService .left.> FindLegalProxy
+    Legal o-down- Address
+    Legal o-down- Individual
+
+}
+@enduml
+
+
