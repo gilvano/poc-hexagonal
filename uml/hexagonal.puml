@@ -29,13 +29,12 @@ package infrastructure {
             +find()
         }
 
-
-        class CreateLegalUseCaseImpl {            
+        class CreateLegalService {
             -saveLegalProxy: SaveLegalProxy
             +create()
         }
 
-        class FindLegalUseCaseImpl {
+        class FindLegalService {
             -findLegalProxy: FindLegalProxy
             +find()
         }
@@ -49,14 +48,14 @@ package infrastructure {
 
     LegalController .down.> CreateLegalUseCase
     LegalController .down.> FindLegalUseCase
-    CreateLegalUseCaseImpl .up.|> CreateLegalUseCase
-    FindLegalUseCaseImpl .up.|> FindLegalUseCase
-    CreateLegalUseCaseImpl .down.> Legal
-    FindLegalUseCaseImpl .down.> Legal
+    CreateLegalService .up.|> CreateLegalUseCase
+    FindLegalService .up.|> FindLegalUseCase
+    CreateLegalService .down.> Legal
+    FindLegalService .down.> Legal
     LegalProxyDB .up.|> SaveLegalProxy
     LegalProxyDB .up.|> FindLegalProxy
-    CreateLegalUseCaseImpl .down.> SaveLegalProxy
-    FindLegalUseCaseImpl .left.> FindLegalProxy
+    CreateLegalService .down.> SaveLegalProxy
+    FindLegalService .left.> FindLegalProxy
     Legal o-down- Address
     Legal o-down- Individual
 
