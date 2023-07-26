@@ -2,6 +2,7 @@ package com.gbtech.pochexagonal.application
 
 import assertk.assertThat
 import assertk.assertions.isNotNull
+import com.gbtech.pochexagonal.application.repository.LegalRepository
 import com.gbtech.pochexagonal.application.repository.LegalRepresentativeRepository
 import com.gbtech.pochexagonal.application.resquest.CreateLegalRequest
 import com.gbtech.pochexagonal.application.service.CreateLegalService
@@ -16,17 +17,22 @@ import org.junit.jupiter.api.assertThrows
 class CreateLegalServiceTest {
 
     private val legalRepresentativeRepository = mockk<LegalRepresentativeRepository>()
+    private val legalRepository = mockk<LegalRepository>()
 
-    private val createLegalService = CreateLegalService(legalRepresentativeRepository)
+    private val createLegalService = CreateLegalService(
+        legalRepository,
+        legalRepresentativeRepository
+    )
 
     @Test
     fun `should throw an exception when legal representative is not found`() {
         // given
+        val legalRepresentativeId = "Invalid legalRepresentativeId"
         val createLegalRequest = CreateLegalRequest(
             name = "Valid name",
             documentNumber = "Valid documentNumber",
             email = "Valid email",
-            legalRepresentativeId = "Invalid legalRepresentativeId"
+            legalRepresentativeId = legalRepresentativeId
         )
         every { legalRepresentativeRepository.findById(any()) } returns null
 
@@ -37,21 +43,23 @@ class CreateLegalServiceTest {
 
         // then
         assertEquals("Legal representative not found", exception.message)
-        verify(exactly = 1) { legalRepresentativeRepository.findById("Invalid legalRepresentativeId") }
+        verify(exactly = 1) { legalRepresentativeRepository.findById(legalRepresentativeId) }
+        verify(exactly = 0) { legalRepository.save(any()) }
     }
 
     @Test
     fun `should save legal without exception`() {
         // given
+        val legalRepresentativeId = "Valid legalRepresentativeId"
         val createLegalRequest = CreateLegalRequest(
             name = "Valid name",
             documentNumber = "Valid documentNumber",
             email = "Valid email",
-            legalRepresentativeId = "Valid legalRepresentativeId"
+            legalRepresentativeId = legalRepresentativeId
         )
 
         val legalRepresentative = LegalRepresentative(
-            id = "Valid legalRepresentativeId",
+            id = legalRepresentativeId,
             name = "Valid name",
             documentNumber = "Valid documentNumber"
         )
@@ -67,6 +75,7 @@ class CreateLegalServiceTest {
         assertEquals("Valid documentNumber", response.documentNumber)
         assertEquals("Valid email", response.email)
         assertEquals("Valid legalRepresentativeId", response.legalRepresentative.id)
-        verify { legalRepresentativeRepository.findById("Valid legalRepresentativeId") }
+        verify(exactly = 1) { legalRepresentativeRepository.findById(legalRepresentativeId) }
+        verify(exactly = 1) { legalRepository.save(any()) }
     }
 }

@@ -56,8 +56,8 @@ package infrastructure {
     LegalProxyDB .up.|> FindLegalProxy
     CreateLegalService .down.> SaveLegalProxy
     FindLegalService .left.> FindLegalProxy
-    Legal o-down- Address
-    Legal o-down- Individual
+    Legal *-down- Address
+    Legal *-down- Individual
 
 }
 @enduml
